@@ -22,7 +22,10 @@ Ext.onReady(function() {
             store: ISS_store,
             columns: [
                 { header: 'Mission', dataIndex: 'Mission', flex: 1},
-                { header: 'Time', dataIndex: 'Time', width: 110},
+                { header: 'Time', dataIndex: 'Time', renderer: function(value){
+                    var y = value.slice(0, 4) + '-' + value.slice(4, 6) + '-' + value.slice(6, 8) + ' ' + value.slice(9,11) + ':' + value.slice(11,13);
+                    return y;
+                }, width: 110},
                 { header: 'School', dataIndex: 'School', width: 150 }
             ],
             renderTo: 'grid',
