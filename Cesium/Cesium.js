@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cesium - https://github.com/AnalyticalGraphicsInc/cesium
  *
  * Copyright 2011-2013 Cesium Contributors
@@ -76845,6 +76845,10 @@ define('Scene/CentralBody',[
                 if (!this.depthTestAgainstTerrain) {
                     colorCommandList.push(this._clearDepthCommand);
                     colorCommandList.push(this._depthCommand);
+                }
+            } else if (mode === SceneMode.COLUMBUS_VIEW) {
+                if (!this.depthTestAgainstTerrain) {
+                    colorCommandList.push(this._clearDepthCommand);
                 }
             }
         }
