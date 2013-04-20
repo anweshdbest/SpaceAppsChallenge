@@ -1,13 +1,25 @@
 /*global define*/
 define(function(require) {
     "use strict";
-    /*global Cesium*/
+    /*global Cesium,Leap*/
+
+    function map(value, inputMin, inputMax, outputMin, outputMax){
+        var outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
+        if(outVal >  outputMax){
+            outVal = outputMax;
+        }
+        if(outVal <  outputMin){
+            outVal = outputMin;
+        }
+        return outVal;
+    }
 
     return function() {
         var viewHome = require('./viewHome');
         var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
         var widget = new Cesium.CesiumWidget('cesiumContainer');
+        widget._isDestroyed = true;
         var centralBody = widget.centralBody;
 
         var ellipsoid = centralBody.getEllipsoid();
@@ -98,10 +110,55 @@ define(function(require) {
 
         // camera.controller.viewExtent(extent, ellipsoid);
 
+        /*
         scene.render();
         var flight = Cesium.CameraFlightPath.createAnimationCartographic(scene.getFrameState(), {
             destination : Cesium.Cartographic.fromDegrees(-72.5926666666667, -36.679, 100000.0)
         });
         scene.getAnimations().add(flight);
+        */
+
+        var firstValidFrame;
+
+        Leap.loop(function(frame) {
+            if (widget._needResize) {
+                widget.resize();
+                widget._needResize = false;
+            }
+
+            var currentTime = widget.clock.tick();
+            widget.scene.initializeFrame();
+            var camera = scene.getCamera();
+
+            if (frame.valid) {
+              if (typeof firstValidFrame === 'undefined') {
+                  firstValidFrame = frame;
+              }
+              var t = firstValidFrame.translation(frame);
+
+              //limit y-axis between 0 and 180 degrees
+              var curY = map(t[1], -300, 300, 0, 179);
+
+              //assign rotation coordinates
+              var rotateX = t[0];
+              var rotateY = -curY;
+
+              //var zoom = Math.max(0, t[2]);
+              //var zoomFactor = 1/(1 + (zoom / 150));
+
+              var cameraRadius = camera.position.magnitude();
+
+              //adjust 3D spherical coordinates of the camera
+              camera.position.x = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180);
+              camera.position.y = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.sin(rotateX * Math.PI/180);
+              camera.position.z = cameraRadius * Math.cos(rotateY * Math.PI/180);
+              //camera.fov = fov * zoomFactor;
+            }
+
+            var p = camera.position.negate().normalize();
+            var up = Cesium.Cartesian3.cross(p, Cesium.Cartesian3.UNIT_Z).cross(p);
+            camera.controller.lookAt(camera.position, Cesium.Cartesian3.ZERO, up);
+            widget.scene.render(currentTime);
+          });
     };
 });
