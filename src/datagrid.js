@@ -3,15 +3,15 @@ function refreshGrid(searchTerm){
     var store = Ext.getCmp('dataGrid').getStore();
     store.clearFilter();
     if(searchRegExp !== '') {
-        store.filter("schools", searchRegExp);
+        store.filter("School", searchRegExp);
     }
 }
 
 Ext.onReady(function() {
         var ISS_store= Ext.create('Ext.data.JsonStore', {
-            fields: ['taken_utc','mission_name','schools'],
+            fields: ['Time','Mission', 'School', 'ID', 'ImageURL', 'CZML'],
             data: ISS_JSON,
-            sorters: [{property:'taken_utc', direction: 'DESC'}]
+            sorters: [{property:'Time', direction: 'DESC'}]
         });
 
         var grid = Ext.create('Ext.grid.Panel', {
@@ -21,9 +21,9 @@ Ext.onReady(function() {
             collapsed: true,
             store: ISS_store,
             columns: [
-                { header: 'Mission', dataIndex: 'mission_name', flex: 1},
-                { header: 'Time', dataIndex: 'taken_utc', width: 110},
-                { header: 'School', dataIndex: 'schools', width: 150 }
+                { header: 'Mission', dataIndex: 'Mission', flex: 1},
+                { header: 'Time', dataIndex: 'Time', width: 110},
+                { header: 'School', dataIndex: 'School', width: 150 }
             ],
             renderTo: 'grid',
             width: 400,

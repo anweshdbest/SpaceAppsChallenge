@@ -106,39 +106,48 @@ namespace csv2Czml
 
                 for (int i = 1; i < lines.Length; i++)
                 {
+                    output.AppendLine();
                     output.Append("{");
+                    output.AppendLine();
                     string line = lines[i];
                     string[] tokens = line.Split(new[] { ',' });
                     for (int q = 0; q < tokens.Length; q++)
                     {
-                        tokens[q] = tokens[q].Trim('"').Trim();
+                        tokens[q] = tokens[q].Trim('"').Trim().Replace("\"", "\\\"");
                     }
                     output.Append("\"ID\":");
                     output.Append(tokens[0]);
                     output.Append(",");
+                    output.AppendLine();
 
-                    output.Append("\"Time\":");
+                    output.Append("\"Time\":\"");
                     output.Append(GregorianDate.Parse(tokens[17]).ToIso8601String(Iso8601Format.Compact));
-                    output.Append(",");
+                    output.Append("\",");
+                    output.AppendLine();
 
                     output.Append("\"Mission\":\"");
                     output.Append(tokens[18]);
                     output.Append("\",");
+                    output.AppendLine();
 
                     output.Append("\"School\":\"");
                     output.Append(tokens[23]);
                     output.Append("\",");
+                    output.AppendLine();
 
                     output.Append("\"ImageUrl\":\"");
                     output.Append(tokens[21].Split(new[] { '=' })[2]);
                     output.Append("\",");
+                    output.AppendLine();
 
                     output.Append("\"CZML\":\"");
                     output.Append(Path.GetFileNameWithoutExtension(file) + ".czml\"");
+                    output.AppendLine();
                     output.Append("},");
                 }
             }
             output.Append("]");
+            output.Replace(",]", "]");
             File.WriteAllText("missions.json", output.ToString());
         }
 
