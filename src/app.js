@@ -18,7 +18,7 @@ define(function(require) {
 
         var ellipsoid = centralBody.getEllipsoid();
 
-        centralBody.logoOffset = new Cesium.Cartesian2(300, 26);
+        centralBody.logoOffset = new Cesium.Cartesian2(370, 26);
 
         var clock = widget.clock;
 
