@@ -13,3 +13,9 @@
 	width: 118px;
 	height: 26px;
 }
+
+#grid {
+    position: absolute;
+    top:0;
+    left: 0;
+}
