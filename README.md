@@ -1,5 +1,5 @@
-Earth from Space Using Cesium
-=============================
+EarthKAM Explorer
+=================
 
 For the [International Space Apps Challenge 2013](http://spaceappschallenge.org/).
 
