@@ -15,11 +15,17 @@ define(function(require) {
         centralBody.logoOffset = new Cesium.Cartesian2(300, 26);
 
         var clock = widget.clock;
-        clock.currentTime = new Cesium.JulianDate();
-        clock.startTime = clock.currentTime.addDays(-5);
-        clock.stopTime = clock.currentTime.addDays(5);
+        clock.currentTime = Cesium.JulianDate.fromIso8601('20110725T1843Z');
+        clock.startTime = clock.currentTime;
+        clock.stopTime = clock.currentTime.addDays(4);
         clock.multiplier = 1;
         clock.clockRange = Cesium.ClockRange.LOOP_STOP;
+
+        clock.onTick.addEventListener(function(time) {
+            if (typeof visualizers !== 'undefined') {
+                visualizers.update(clock.currentTime);
+            }
+        });
 
         var clockViewModel = new Cesium.ClockViewModel(clock);
 
@@ -59,22 +65,32 @@ define(function(require) {
 
         var dynamicObjectCollection = new Cesium.DynamicObjectCollection();
         var visualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), dynamicObjectCollection);
+
+        var dynamicObjectCollection2 = new Cesium.DynamicObjectCollection();
+        var visualizers2 = new Cesium.VisualizerCollection([new Cesium.DynamicPolygonBatchVisualizer(scene)], dynamicObjectCollection2);
         function loadCzml(url) {
             visualizers.removeAllPrimitives();
             dynamicObjectCollection.clear();
 
             return Cesium.loadJson(url).then(function(czml) {
-                Cesium.processCzml(czml, dynamicObjectCollection, url);
-                visualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
+                Cesium.processCzml(czml, dynamicObjectCollection2, url);
+                visualizers2.update(Cesium.Iso8601.MINIMUM_VALUE);
             });
         }
-        loadCzml('/Assets/CZML/ISS11_04_image_data.czml');
+
+        function loadCzml2(url) {
+            return Cesium.loadJson(url).then(function(czml) {
+                Cesium.processCzml(czml, dynamicObjectCollection, url);
+            });
+        }
+        loadCzml('/Assets/CZML/ISS11_07_image_data.czml');
+        loadCzml2('/Assets/CZML/ISS11_07_image_data_ISS.czml');
 
         //var terrainProvider = new Cesium.CesiumTerrainProvider({
         //    url : 'http://cesium.agi.com/smallterrain'
         //});
 
-        // centralBody.terrainProvider = terrainProvider;
+        centralBody.terrainProvider = terrainProvider;
 
         // Pipeline
         // csv to JSON
