@@ -1,11 +1,39 @@
-/*global require,__dirname*/
-var path = require('path');
-var connect = require('connect');
+(function() {
+    "use strict";
+    /*global console,require,__dirname*/
+    var path = require('path');
+    var express = require('express');
+    var Q = require('q');
+    var app = express();
 
-var dir = path.join(__dirname, '..');
+    var dir = path.join(__dirname, '..');
 
-var app = connect();
-app.use(connect.compress());
-app.use(connect.static(dir));
+    app.use(express.compress());
+    app.use(express.static(dir));
 
-connect.createServer(app).listen(8080);
+    var nano = require('nano')('http://localhost:5984');
+
+    function getDatabase() {
+        var name = 'space_apps';
+
+        return Q.nfcall(nano.db.get, name).then(function() {
+            return nano.use(name);
+        }, function(error) {
+            return Q.nfcall(nano.db.create, name).then(function() {
+                return nano.use(name);
+            }, function(error) {
+                console.log(error);
+            });
+        });
+    }
+
+    app.get('/rows', function(req, res) {
+        return getDatabase().then(function(db) {
+            return Q.nfcall(db.list);
+        }).then(function(body) {
+            res.send(body[0].rows.join(','));
+        }).done();
+    });
+
+    app.listen(8080);
+})();
