@@ -1,5 +1,4 @@
 @import url(Cesium/Widgets/CesiumWidget/CesiumWidget.css);
-
 @import url(Cesium/Widgets/widgets.css);
 
 body {
@@ -114,17 +113,19 @@ body {
 }
 
 .cw-agiLogo {
-    display: block;
-    position: absolute;
-    bottom: 30px;
-    left: 300px;
-    text-decoration: none;
-    background-image: url(../Assets/AGILogo3_overlay.png);
-    background-size: 60px 30px;
-    width: 60px;
-    height: 30px;
+	display: block;
+	position: absolute;
+	bottom: 30px;
+	left: 300px;
+	text-decoration: none;
+	background-image: url(../Assets/AGILogo3_overlay.png);
+	background-size: 60px 30px;
+	width: 60px;
+	height: 30px;
 }
 
 .cw-agiLogo img {
-    border: none;
+	border: none; # grid { position : absolute;
+	top: 0;
+	left: 0;
 }

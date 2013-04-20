@@ -4,7 +4,14 @@
 <title>Earth from Space - International Space Apps Challenge</title>
 <script src="Cesium/Cesium.js"></script>
 <script data-main="src/main" src="requirejs/require.js"></script>
+<script type="text/javascript" src="ext-4.2.0.663/ext-all.js"></script>
+<script type="text/javascript" src="src/datagrid.js"></script>
+<script type="text/javascript" src="Assets/missions.js"></script>
 <link rel="stylesheet" href="style.css" media="screen">
+<style>
+  @import url(ext-4.2.0.663/resources/ext-theme-gray/ext-theme-gray-all.css);
+  @import url(Cesium/Widgets/CesiumWidget/CesiumWidget.css);
+</style>
 </head>
 <body>
 	<div id="cesiumContainer"></div>
@@ -17,5 +24,6 @@
 	<div id="animationContainer"></div>
 	<div id="fullscreenContainer"></div>
         <a class="cw-agiLogo" data-dojo-attach-point="agiLogo" href="http://www.agi.com/" target="_blank"></a>
+    <div id="grid"></div>
 </body>
 </html>
