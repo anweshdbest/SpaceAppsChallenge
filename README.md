@@ -15,9 +15,10 @@ Resources
 * [Challenge details](http://spaceappschallenge.org/challenge/earth-from-space/)
 * [ISS EarthKAM Gallery](http://images.earthkam.ucsd.edu/main.php)
 * [csv downloads](https://earthkam.ucsd.edu/ek-images/data)
+* [Cesium Documentation](http://cesium.agi.com/Cesium/Build/Documentation/)
 
 Running the App
 ---------------
 * Install [NodeJS](http://nodejs.org/)
 * From the `server` folder, run `node server.js`.
-* Browse to http://localhost:8080
+* Browse to [http://localhost:8080](http://localhost:8080)
