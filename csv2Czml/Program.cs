@@ -9,25 +9,24 @@ namespace csv2Czml
     {
         static void Main(string[] args)
         {
-            StringWriter f = new StringWriter();
-            var m_output = new CesiumOutputStream(f);
-            m_output.PrettyFormatting = false;
-            var m_writer = new CesiumStreamWriter();
-
             var files = new[]{
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS11_07_image_data.csv",
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS11_11_image_data.csv",
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS12_01_image_data.csv",
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS12_07_2_image_data.csv",
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS12_11_image_data.csv",
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS13_01_image_data.csv",
-                @"C:\Git\pjcozzi\SpaceAppsChallenge\Assets\CSV\ISS11_04_image_data.csv"
+                @"Data\ISS11_07_image_data.csv",
+                @"Data\ISS11_11_image_data.csv",
+                @"Data\ISS12_01_image_data.csv",
+                @"Data\ISS12_07_2_image_data.csv",
+                @"Data\ISS12_11_image_data.csv",
+                @"Data\ISS13_01_image_data.csv",
+                @"Data\ISS11_04_image_data.csv"
             };
 
-            m_output.WriteStartSequence();
-            int count = 0;
             foreach (var file in files)
             {
+                StringWriter f = new StringWriter();
+                var m_output = new CesiumOutputStream(f);
+                m_output.PrettyFormatting = false;
+                var m_writer = new CesiumStreamWriter();
+                m_output.WriteStartSequence();
+
                 string[] lines = File.ReadAllLines(file);
                 var rng = new Random();
 
@@ -63,14 +62,12 @@ namespace csv2Czml
                                 }
                             }
                         }
-                        count++;
                     }
                 }
+                m_output.WriteEndSequence();
+                m_output.Dispose();
+                File.WriteAllText(Path.GetFileNameWithoutExtension(file) + ".czml", f.ToString());
             }
-            m_output.WriteEndSequence();
-            m_output.Dispose();
-            Console.WriteLine(count);
-            File.WriteAllText("czml.czml", f.ToString());
         }
     }
 }

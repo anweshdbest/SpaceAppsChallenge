@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csv2Czml", "csv2Czml\csv2Czml.csproj", "{404116EE-282B-4C95-A09F-4B5F4802C701}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csv2Czml", "csv2Czml.csproj", "{404116EE-282B-4C95-A09F-4B5F4802C701}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

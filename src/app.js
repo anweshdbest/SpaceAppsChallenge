@@ -6,8 +6,19 @@
 	var centralBody = widget.centralBody;
 	var ellipsoid = centralBody.getEllipsoid();
 	var scene = widget.scene;
+
 	var primitives = scene.getPrimitives();
 	var camera = scene.getCamera();
+
+    var dynamicObjectCollection = new Cesium.DynamicObjectCollection();
+    var visualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), dynamicObjectCollection);
+    function loadCzml(url) {
+        return Cesium.loadJson(url).then(function(czml) {
+            Cesium.processCzml(czml, dynamicObjectCollection, url);
+            visualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
+        });
+    }
+    loadCzml('/Assets/all.czml');
 
 	var terrainProvider = new Cesium.CesiumTerrainProvider({
 		url : 'http://cesium.agi.com/smallterrain'
