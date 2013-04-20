@@ -30,6 +30,7 @@ namespace csv2Czml
                 string[] lines = File.ReadAllLines(file);
                 var rng = new Random();
 
+                GregorianDate start = new GregorianDate();
                 for (int i = 1; i < lines.Length; i++)
                 {
                     string line = lines[i];
@@ -37,6 +38,20 @@ namespace csv2Czml
                     for (int q = 0; q < tokens.Length; q++)
                     {
                         tokens[q] = tokens[q].Trim('"').Trim();
+                    }
+
+                    if (i == 1)
+                    {
+                        start = GregorianDate.Parse(tokens[17]);
+                    }
+                    else if (i == lines.Length - 1)
+                    {
+                        Console.WriteLine(Path.GetFileNameWithoutExtension(file));
+                        Console.WriteLine(start.ToJulianDate().TotalDays + " JDate");
+                        var stop = GregorianDate.Parse(tokens[17]);
+                        Console.WriteLine(stop.ToJulianDate().TotalDays + " JDate");
+                        Console.WriteLine();
+                        //Console.WriteLine((stop.ToJulianDate() - start.ToJulianDate()).TotalDays);
                     }
                     using (var packet = m_writer.OpenPacket(m_output))
                     {
