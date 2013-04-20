@@ -38,5 +38,14 @@
 				<arguments>1.0-name-matches-false-false-node_modules</arguments>
 			</matcher>
 		</filter>
+		<filter>
+			<id>1366494668283</id>
+			<name>src</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-domReady.js</arguments>
+			</matcher>
+		</filter>
 	</filteredResources>
 </projectDescription>
