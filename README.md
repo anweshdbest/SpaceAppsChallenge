@@ -16,7 +16,8 @@ Short Challenge Description
 
 Resources
 ---------
-* [Challenge details](http://spaceappschallenge.org/challenge/earth-from-space/)
+* [Challenge details](http://spaceappschallenge.org/challenge/earth-from-space/) on the Space Apps site.
+* [EarthKAM Explorer project page](http://spaceappschallenge.org/project/earthkam-explorer/) on the Space Apps site.
 * [ISS EarthKAM Gallery](http://images.earthkam.ucsd.edu/main.php)
 * [csv downloads](https://earthkam.ucsd.edu/ek-images/data)
 * [Cesium Documentation](http://cesium.agi.com/Cesium/Build/Documentation/)
