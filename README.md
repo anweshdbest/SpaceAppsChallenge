@@ -5,6 +5,10 @@ For the [International Space Apps Challenge 2013](http://spaceappschallenge.org/
 
 This project uses HTML5 and [Cesium](http://cesium.agi.com/), a WebGL virtual globe and map, so it runs in a modern browser (Chrome recommended) and on Android without requiring an install or admin privileges.
 
+![](doc/iss1.jpg)
+
+![](doc/leapmotion.jpg)
+
 Short Challenge Description
 ---------------------------
 
