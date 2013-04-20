@@ -4,4 +4,8 @@ var connect = require('connect');
 
 var dir = path.join(__dirname, '..');
 
-connect.createServer(connect.static(dir)).listen(8080);
+var app = connect();
+app.use(connect.compress());
+app.use(connect.static(dir));
+
+connect.createServer(app).listen(8080);
