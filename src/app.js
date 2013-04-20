@@ -86,9 +86,9 @@ define(function(require) {
         loadCzml('/Assets/CZML/ISS11_07_image_data.czml');
         loadCzml2('/Assets/CZML/ISS11_07_image_data_ISS.czml');
 
-        //var terrainProvider = new Cesium.CesiumTerrainProvider({
-        //    url : 'http://cesium.agi.com/smallterrain'
-        //});
+        var terrainProvider = new Cesium.CesiumTerrainProvider({
+            url : 'http://cesium.agi.com/smallterrain'
+        });
 
         centralBody.terrainProvider = terrainProvider;
 
