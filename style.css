@@ -1,0 +1,114 @@
+@import url(Cesium/Widgets/CesiumWidget/CesiumWidget.css);
+
+@import url(Cesium/Widgets/widgets.css);
+
+body {
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	font-family: sans-serif;
+}
+
+#cesiumContainer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.cesium-widget-logo {
+	bottom: 30px;
+	left: 174px;
+}
+
+#animationContainer {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	padding: 0;
+	width: 169px;
+	height: 112px;
+}
+
+#timelineContainer {
+	position: absolute;
+	bottom: 0;
+	left: 169px;
+	right: 29px;
+	height: 27px;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	font-size: 14px;
+	border-bottom: none;
+	border-right: none;
+}
+
+#fullscreenContainer {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 0;
+	width: 29px;
+	height: 29px;
+	overflow: hidden;
+}
+
+#viewButtons {
+	display: block;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+#viewHomeButton {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	vertical-align: middle;
+	background-image: url(Cesium/Widgets/Images/home.svg);
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	border-radius: 14%;
+	position: relative;
+	text-align: center;
+	color: white;
+	margin: 1px;
+	cursor: pointer;
+}
+
+#viewHomeButton:hover {
+	box-shadow: 0 0 8px #fff, 0 0 8px #fff;
+}
+
+#sceneModePickerContainer {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	vertical-align: middle;
+	margin: 1px;
+}
+
+#baseLayerPickerContainer {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	vertical-align: middle;
+	margin: 1px;
+}
+
+.cesium-logo {
+	display: block;
+	position: absolute;
+	bottom: 32px;
+	left: 179px;
+	text-decoration: none;
+	width: 118px;
+	height: 26px;
+}
