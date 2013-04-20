@@ -10,6 +10,12 @@ define(function(require) {
         var widget = new Cesium.CesiumWidget('cesiumContainer');
         var centralBody = widget.centralBody;
 
+        var terrainProvider = new Cesium.CesiumTerrainProvider({
+            url : 'http://cesium.agi.com/smallterrain'
+        });
+
+        centralBody.terrainProvider = terrainProvider;
+
         var ellipsoid = centralBody.getEllipsoid();
 
         centralBody.logoOffset = new Cesium.Cartesian2(300, 26);
@@ -20,12 +26,6 @@ define(function(require) {
         clock.stopTime = clock.currentTime.addDays(4);
         clock.multiplier = 1;
         clock.clockRange = Cesium.ClockRange.LOOP_STOP;
-
-        clock.onTick.addEventListener(function(time) {
-            if (typeof visualizers !== 'undefined') {
-                visualizers.update(clock.currentTime);
-            }
-        });
 
         var clockViewModel = new Cesium.ClockViewModel(clock);
 
@@ -60,37 +60,42 @@ define(function(require) {
         var baseLayerPicker = new Cesium.BaseLayerPicker('baseLayerPickerContainer', imageryLayers, imageryProviderViewModels);
         baseLayerPicker.viewModel.selectedItem(imageryProviderViewModels[0]);
 
-        var primitives = scene.getPrimitives();
-        var camera = scene.getCamera();
+        var issObjectCollection = new Cesium.DynamicObjectCollection();
+        var issVisualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), issObjectCollection);
 
-        var dynamicObjectCollection = new Cesium.DynamicObjectCollection();
-        var visualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), dynamicObjectCollection);
-
-        var dynamicObjectCollection2 = new Cesium.DynamicObjectCollection();
-        var visualizers2 = new Cesium.VisualizerCollection([new Cesium.DynamicPolygonBatchVisualizer(scene)], dynamicObjectCollection2);
-        function loadCzml(url) {
-            visualizers.removeAllPrimitives();
-            dynamicObjectCollection.clear();
+        var photoObjectCollection = new Cesium.DynamicObjectCollection();
+        var photoVisualizers = new Cesium.VisualizerCollection([new Cesium.DynamicPolygonBatchVisualizer(scene)], photoObjectCollection);
+        function loadPhotoCzml(url) {
+            photoVisualizers.removeAllPrimitives();
+            photoObjectCollection.clear();
 
             return Cesium.loadJson(url).then(function(czml) {
-                Cesium.processCzml(czml, dynamicObjectCollection2, url);
-                visualizers2.update(Cesium.Iso8601.MINIMUM_VALUE);
+                Cesium.processCzml(czml, photoObjectCollection, url);
+                photoVisualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
             });
         }
 
-        function loadCzml2(url) {
+        function loadIssCzml(url) {
+            issVisualizers.removeAllPrimitives();
+            issObjectCollection.clear();
+
             return Cesium.loadJson(url).then(function(czml) {
-                Cesium.processCzml(czml, dynamicObjectCollection, url);
+                Cesium.processCzml(czml, issObjectCollection, url);
             });
         }
-        loadCzml('/Assets/CZML/ISS11_07_image_data.czml');
-        loadCzml2('/Assets/CZML/ISS11_07_image_data_ISS.czml');
 
-        var terrainProvider = new Cesium.CesiumTerrainProvider({
-            url : 'http://cesium.agi.com/smallterrain'
+        function loadCzml(missonName) {
+            loadPhotoCzml(require.toUrl('../Assets/CZML/' + missonName + '.czml'));
+            loadIssCzml(require.toUrl('../Assets/CZML/' + missonName + '_ISS.czml'));
+        }
+
+        loadCzml('ISS11_07_image_data');
+
+        clock.onTick.addEventListener(function(time) {
+            if (typeof issVisualizers !== 'undefined') {
+                issVisualizers.update(clock.currentTime);
+            }
         });
-
-        centralBody.terrainProvider = terrainProvider;
 
         // Pipeline
         // csv to JSON
