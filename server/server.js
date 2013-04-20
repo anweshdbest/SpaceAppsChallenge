@@ -1,13 +1,20 @@
 (function() {
     "use strict";
     /*global console,require,__dirname*/
+
     var path = require('path');
     var express = require('express');
+
+    var mime = express.mime;
+    mime.define({
+        'application/json' : ['czml']
+    });
+
     var Q = require('q');
-    var app = express();
 
     var dir = path.join(__dirname, '..');
 
+    var app = express();
     app.use(express.compress());
     app.use(express.static(dir));
 
