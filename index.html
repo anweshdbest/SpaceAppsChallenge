@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Earth from Space - International Space Apps Challenge</title>
-    <script type="text/javascript" src="Cesium/Cesium.js"></script>
-    <script type="text/javascript" src="Assets/ext-4.2.0.663/ext-all.js"></script>
-    
-    <script type="text/javascript" src="Cesium/datagrid.js"></script>
-    <script type="text/javascript" src="Assets/ISS12_01_image_data.js"></script>
-    <style>
-      @import url(Assets/ext-4.2.0.663/resources/ext-theme-gray/ext-theme-gray-all.css);
-      @import url(Cesium/Widgets/CesiumWidget/CesiumWidget.css);
-      body {
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-      }
-    </style>
-  </head>
+<head>
+<title>Earth from Space - International Space Apps Challenge</title>
+<script src="Cesium/Cesium.js"></script>
+<script data-main="src/main" src="requirejs/require.js"></script>
+<script type="text/javascript" src="Assets/ext-4.2.0.663/ext-all.js"></script>
+<script type="text/javascript" src="Cesium/datagrid.js"></script>
+<script type="text/javascript" src="Assets/ISS12_01_image_data.js"></script>
+<link rel="stylesheet" href="style.css" media="screen">
+<style>
+  @import url(Assets/ext-4.2.0.663/resources/ext-theme-gray/ext-theme-gray-all.css);
+  @import url(Cesium/Widgets/CesiumWidget/CesiumWidget.css);
+</style>
+</head>
 <body>
-  <div id="cesiumContainer"></div>
-  <div id="UI">
+<div id="cesiumContainer"></div>
+<div id="viewButtons">
+<div id="viewHomeButton" title="Home"></div>
+<div id="sceneModePickerContainer"></div>
+<div id="baseLayerPickerContainer"></div>
+</div>
+<div id="timelineContainer"></div>
+<div id="animationContainer"></div>
+<div id="fullscreenContainer"></div>
+<div id="UI">
     <div id="grid"></div>
   </div>
-  <script src="src/app.js"></script>  
 </body>
 </html>
