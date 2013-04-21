@@ -4,6 +4,7 @@ define(function(require) {
     /*global Cesium*/
 
     var viewHome = require('./viewHome');
+    var computeRotation = require('./computeRotation');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
     var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
