@@ -5,16 +5,37 @@ define(function(require) {
 
     var viewHome = require('./viewHome');
     var computeRotation = require('./computeRotation');
+    var createFlyToExtentAnimation = require('./createFlyToExtentAnimation');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
     var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
+
     var missionIndexPromise = missionDataPromise.then(function(data) {
         var index = {};
         for ( var i = 0, len = data.length; i < len; ++i) {
             var datum = data[i];
+
+            datum.Time = Cesium.JulianDate.fromIso8601(datum.Time);
+
             index[datum.ID] = datum;
         }
         return index;
+    });
+
+    var gridDataPromise = missionDataPromise.then(function(data) {
+        var idData = new Array(data.length);
+        var timeData = new Array(data.length);
+        var missionData = new Array(data.length);
+        var schoolData = new Array(data.length);
+        var gridData = [idData, timeData, missionData, schoolData];
+        for ( var i = 0, len = data.length; i < len; ++i) {
+            var datum = data[i];
+            idData[i] = datum.ID;
+            timeData[i] = datum.Time;
+            missionData[i] = datum.Mission;
+            schoolData[i] = datum.School;
+        }
+        return gridData;
     });
 
     return function() {
@@ -52,6 +73,13 @@ define(function(require) {
 
         var scene = widget.scene;
         var transitioner = new Cesium.SceneTransitioner(scene);
+
+        // Hack to replace default texture
+        Cesium.when(Cesium.loadImage('../Assets/loading.png'), function(image) {
+            scene.getContext()._defaultTexture = scene.getContext().createTexture2D({
+                source : image
+            });
+        });
 
         var sceneModePickerWidget = new Cesium.SceneModePicker('sceneModePickerContainer', transitioner);
 
@@ -101,6 +129,8 @@ define(function(require) {
                 Cesium.processCzml(photoCzml, photoObjectCollection, photoUrl);
                 photoVisualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
 
+                selectedPhotoPolygon = new Cesium.Polygon();
+                selectedPhotoPolygon.material = new Cesium.Material.fromType(scene.getContext(), 'Image');
                 scene.getPrimitives().add(selectedPhotoPolygon);
 
                 Cesium.processCzml(issCzml, issObjectCollection, issUrl);
@@ -112,7 +142,6 @@ define(function(require) {
                     clock.stopTime = document.clock.stopTime;
                     clock.clockRange = document.clock.clockRange;
                     clock.clockStep = document.clock.clockStep;
-                    clock.multiplier = document.clock.multiplier;
                     clock.currentTime = document.clock.currentTime;
 
                     timelineWidget.zoomTo(clock.startTime, clock.stopTime);
@@ -120,8 +149,6 @@ define(function(require) {
                 }
             });
         }
-
-        loadCzml('ISS13_01_image_data');
 
         /*
         clock.onTick.addEventListener(function(clock) {
@@ -149,18 +176,22 @@ define(function(require) {
                 positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
                 extent = createExtent(positions);
             }
-            scene.getCamera().controller.viewExtent(extent, ellipsoid);
+
+            scene.getAnimations().add(createFlyToExtentAnimation(scene.getFrameState(), extent, ellipsoid));
 
             positions = photoPolygon.vertexPositions.getValueCartesian(clock.currentTime);
             selectedPhotoPolygon.setPositions(positions, 0.0, computeRotation(positions, ellipsoid));
             selectedPhotoPolygon.show = true;
 
             missionIndexPromise.then(function(missionData) {
-                var imageUrl = missionData[id].ImageUrl;
+                var missionDatum = missionData[id];
+                var imageUrl = missionDatum.ImageUrl;
                 imageUrl = Number(imageUrl) + 3;
                 imageUrl = 'http://images.earthkam.ucsd.edu/main.php?g2_view=core.DownloadItem&g2_itemId=' + imageUrl;
                 imageUrl = proxy.getURL(imageUrl);
                 selectedPhotoPolygon.material.uniforms.image = imageUrl;
+
+                clockViewModel.currentTime(missionDatum.Time);
             });
         }
 
@@ -208,14 +239,33 @@ define(function(require) {
             pick(movement.position);
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-        // Pipeline
-        // csv to JSON
-        // Resize or tile images
+        var missionSelect = document.getElementById("missionSelect");
+        missionSelect.addEventListener('change', function() {
+            var selected = missionSelect.item(missionSelect.selectedIndex);
+            loadCzml(selected.value);
+        });
 
-        // Graphics
-        // Compute rotation angle
-        // blend layers
-        // Sample terrain to draw outline
+
+        var missions2CzmlNamePromise = missionDataPromise.then(function(data) {
+            var firstTime = true;
+            var index = {};
+            for ( var i = 0, len = data.length; i < len; ++i) {
+                var datum = data[i];
+                if (typeof index[datum.Mission] === 'undefined') {
+                    var value = datum.CZML.slice(0, datum.CZML.length - 5);
+                    var option = document.createElement("option");
+                    option.text = datum.Mission;
+                    option.value = value;
+                    missionSelect.add(option, null);
+                    index[datum.Mission] = value;
+                    if (firstTime) {
+                        firstTime = false;
+                        loadCzml(value);
+                    }
+                }
+            }
+            return index;
+        });
 
         var firstValidFrame;
         var pickGesture = false;
