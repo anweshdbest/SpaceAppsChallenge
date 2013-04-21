@@ -58,6 +58,7 @@ define(function(require) {
         var canvas = widget.canvas;
         var viewHomeButton = document.getElementById('viewHomeButton');
         viewHomeButton.addEventListener('click', function() {
+            cancelViewFromTo();
             viewHome(scene, transitioner, canvas, ellipsoid, camera3D);
         });
 
@@ -121,14 +122,24 @@ define(function(require) {
 
         loadCzml('ISS13_01_image_data');
 
-        clock.onTick.addEventListener(function(time) {
+        clock.onTick.addEventListener(function(clock) {
+            if (typeof viewFromTo !== 'undefined') {
+                viewFromTo.update(clock.currentTime);
+            }
             if (typeof issVisualizers !== 'undefined') {
                 issVisualizers.update(clock.currentTime);
             }
         });
 
         var proxy = new Cesium.DefaultProxy('/proxy/');
+
+        function cancelViewFromTo() {
+            viewFromTo = undefined;
+            scene.getCamera().transform = Cesium.Matrix4.IDENTITY.clone();
+        }
+
         function selectImage(id, extent) {
+            cancelViewFromTo();
             var photoPolygon = photoObjectCollection.getObject(id);
             var positions;
             if (typeof extent === 'undefined') {
@@ -165,12 +176,19 @@ define(function(require) {
             return new Cesium.Extent(minLon, minLat, maxLon, maxLat);
         }
 
+		var viewFromTo;
         var handler = new Cesium.ScreenSpaceEventHandler(scene.getCanvas());
         handler.setInputAction(function(movement) {
             var pickedObject = scene.pick(movement.position);
-
             if (typeof pickedObject !== 'undefined') {
-                var index = pickedObject.index;
+                var dynamicObject = pickedObject.dynamicObject;
+                if (typeof dynamicObject !== 'undefined') {
+                    if (dynamicObject.id === '/Application/STK/Scenario/SpaceAppsChallenge/Satellite/Iss_25544' && typeof viewFromTo === 'undefined') {
+                        viewFromTo = new Cesium.DynamicObjectView(dynamicObject, scene, widget.ellipsoid);
+                    }
+                }
+
+			var index = pickedObject.index;
                 if (typeof index !== 'undefined') {
                     var polyObjects = photoObjectCollection.getObjects();
                     for ( var i = 0, length = polyObjects.length; i < length; i++) {
