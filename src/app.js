@@ -211,8 +211,9 @@ define(function(require) {
               //assign rotation coordinates
               var rotateX = translation[0];
               var rotateY = -map(translation[1], -300, 300, 1, 179);
+              var zoom = translation[2];
 
-              var cameraRadius = camera.position.magnitude();
+              var cameraRadius = camera.position.magnitude() - zoom * 100.0;
 
               //adjust 3D spherical coordinates of the camera
               camera.position.x = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180);
