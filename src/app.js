@@ -8,6 +8,7 @@ define(function(require) {
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
     var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
+
     var missionIndexPromise = missionDataPromise.then(function(data) {
         var index = {};
         for ( var i = 0, len = data.length; i < len; ++i) {
@@ -15,6 +16,22 @@ define(function(require) {
             index[datum.ID] = datum;
         }
         return index;
+    });
+
+    var gridDataPromise = missionDataPromise.then(function(data) {
+        var idData = new Array(data.length);
+        var timeData = new Array(data.length);
+        var missionData = new Array(data.length);
+        var schoolData = new Array(data.length);
+        var gridData = [idData, timeData, missionData, schoolData];
+        for ( var i = 0, len = data.length; i < len; ++i) {
+            var datum = data[i];
+            idData[i] = datum.ID;
+            timeData[i] = datum.Time;
+            missionData[i] = datum.Mission;
+            schoolData[i] = datum.School;
+        }
+        return gridData;
     });
 
     return function() {
