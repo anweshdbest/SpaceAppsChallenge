@@ -7,6 +7,7 @@ define(function(require) {
     var computeRotation = require('./computeRotation');
     var createFlyToExtentAnimation = require('./createFlyToExtentAnimation');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
+    var createGrid = require('./datagrid');
 
     var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
 
@@ -22,23 +23,17 @@ define(function(require) {
         return index;
     });
 
-    var gridDataPromise = missionDataPromise.then(function(data) {
-        var idData = new Array(data.length);
-        var timeData = new Array(data.length);
-        var missionData = new Array(data.length);
-        var schoolData = new Array(data.length);
-        var gridData = [idData, timeData, missionData, schoolData];
-        for ( var i = 0, len = data.length; i < len; ++i) {
-            var datum = data[i];
-            idData[i] = datum.ID;
-            timeData[i] = datum.Time;
-            missionData[i] = datum.Mission;
-            schoolData[i] = datum.School;
-        }
-        return gridData;
-    });
-
     return function() {
+        var gridDataPromise = missionDataPromise.then(function(data) {
+            var gridData = new Array(data.length);
+            for ( var i = 0, len = data.length; i < len; ++i) {
+                var datum = data[i];
+                gridData[i] = [datum.ID, datum.Time, datum.Mission, datum.School];
+            }
+            createGrid(gridData);
+            return gridData;
+        });
+
         var widget = new Cesium.CesiumWidget('cesiumContainer');
         var centralBody = widget.centralBody;
 

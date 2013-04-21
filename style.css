@@ -23,11 +23,17 @@ body {
 	left: 174px;
 }
 
+.topLeft {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+}
+
 #missionSelect {
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 999;
+}
+
+#grid {
 }
 
 #animationContainer {
