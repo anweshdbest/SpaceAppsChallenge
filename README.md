@@ -1,29 +1,35 @@
 EarthKAM Explorer
 =================
 
-For the [International Space Apps Challenge 2013](http://spaceappschallenge.org/).
+Use <a href="http://www.google.com/chrome/" target="_blank">Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/new/" target="_blank">Firefox</a> to run EarthKAM Explorer:
 
-This project uses HTML5 and [Cesium](http://cesium.agi.com/), a WebGL virtual globe and map, so it runs in a modern browser (Chrome recommended) and on Android without requiring an install or admin privileges.
+<a href="http://cesiumspaceapp.cloudapp.net/" target="_blank"><img src="doc/run.png" /></a>
 
-![](doc/iss1.jpg)
+EarthKAM Explorer solves the <a href="http://spaceappschallenge.org/challenge/earth-from-space/" target="_blank">Earth from Space</a> challenge for the <a href="http://spaceappschallenge.org/" target="_blank">International Space Apps Challenge 2013</a>.  EarthKAM Explorer provides web-based 3D exploration of satellite images taken by middle school students through the <a href="https://earthkam.ucsd.edu/" target="_blank">ISS EarthKAM</a> program.
 
-![](doc/leapmotion.jpg)
+<p align="center">
+<img src="doc/iss1.jpg" width="640" />
+</p>
 
-Short Challenge Description
----------------------------
+EarthKAM Explorer is written in JavaScript using <a href="http://cesium.agi.com/" target="_blank">Cesium</a>, an open-source WebGL virtual globe and map, so it runs in a browser <strong>without a plugin</strong>.  It supports the <a href="https://www.leapmotion.com/" target="_blank">Leap Motion</a> controller for <strong>hand-gesture</strong> input as shown below.
 
-"Using images taken by middle school students through the ISS EarthKAM program, create an educational application that allows users to overlay EarthKAM images on a 3D model of earth, annotate and comment on the images, and share their work via social media. This application can be web based or designed as a mobile application for an Android device."
+<p align="center">
+<img src="doc/leapmotion.jpg" width="400" />
+</p>
 
-Resources
----------
-* [Challenge details](http://spaceappschallenge.org/challenge/earth-from-space/) on the Space Apps site.
-* [EarthKAM Explorer project page](http://spaceappschallenge.org/project/earthkam-explorer/) on the Space Apps site.
-* [ISS EarthKAM Gallery](http://images.earthkam.ucsd.edu/main.php)
-* [csv downloads](https://earthkam.ucsd.edu/ek-images/data)
-* [Cesium Documentation](http://cesium.agi.com/Cesium/Build/Documentation/)
+EarthKAM Explorer was created in a weekend by developers from <a href="http://www.agi.com/" target="_blank">Analytical Graphics, Inc</a>: <a href="https://github.com/bagnell" target="_blank">@bagnell</a>, <a href="https://github.com/hpinkos" target="_blank">@hpinkos</a>, <a href="https://twitter.com/matt_amato" target="_blank">@mramato</a>, <a href="https://twitter.com/pjcozzi" target="_blank">@pjcozzi</a>, and <a href="https://github.com/shunter" target="_blank">@shunter</a>.
 
-Running the App
----------------
+Building EarthKAM Explorer
+--------------------------
+* Clone this repo.
 * Install [NodeJS](http://nodejs.org/)
 * From the `server` folder, run `node server.js`.
 * Browse to [http://localhost:8080](http://localhost:8080)
+
+Resources
+---------
+* [Earth from Space challenge details](http://spaceappschallenge.org/challenge/earth-from-space/) on the Space Apps site.
+* [EarthKAM Explorer project page](http://spaceappschallenge.org/project/earthkam-explorer/) on the Space Apps site.
+* [ISS EarthKAM Gallery](http://images.earthkam.ucsd.edu/main.php)
+* [ISS EarthKAM csv downloads](https://earthkam.ucsd.edu/ek-images/data)
+* [Cesium Documentation](http://cesium.agi.com/Cesium/Build/Documentation/)

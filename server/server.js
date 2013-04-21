@@ -10,6 +10,9 @@
         'application/json' : ['czml']
     });
 
+    var url = require('url');
+    var request = require('request');
+
     var Q = require('q');
 
     var dir = path.join(__dirname, '..');
@@ -33,6 +36,15 @@
             });
         });
     }
+
+    app.get('/proxy', function(req, res) {
+        var remoteUrl = Object.keys(req.query)[0];
+        if (url.parse(remoteUrl).hostname !== 'images.earthkam.ucsd.edu') {
+            res.end();
+        }
+
+        request.get(remoteUrl).pipe(res);
+    });
 
     app.get('/rows', function(req, res) {
         return getDatabase().then(function(db) {
