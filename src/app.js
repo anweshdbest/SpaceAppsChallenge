@@ -110,38 +110,26 @@ define(function(require) {
             }
         });
 
-
         function selectImage(id, extent) {
             if (typeof extent === 'undefined') {
-                var polyObjects = photoObjectCollection.getObjects();
-                for ( var i = 0, length = polyObjects.length; i < length; i++) {
-                    var pickedPoly = polyObjects[i];
-                    if (pickedPoly.id === id) {
-                        var positions = pickedPoly.vertexPositions.getValueCartographic(clock.currentTime);
-                        var extent = createExtent(positions);
-                        selectImage(pickedPoly.id, extent);
-                        break;
-                    }
-                }
+                var photoPolygon = photoObjectCollection.getObject(id);
+                var positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
+                extent = createExtent(positions);
             }
             scene.getCamera().controller.viewExtent(extent, ellipsoid);
         }
 
         function createExtent(positions) {
-            var maxLat, maxLon, minLat, minLon;
+            var minLon = -Math.PI;
+            var maxLon = Math.PI;
+            var minLat = -Cesium.Math.PI_OVER_TWO;
+            var maxLat = Cesium.Math.PI_OVER_TWO;
             for ( var i = 0; i < positions.length; i++) {
                 var position = positions[i];
-                if (i === 0) {
-                    maxLat = position.latitude;
-                    minLat = position.latitude;
-                    maxLon = position.longitude;
-                    minLon = position.longitude;
-                } else {
-                    maxLat = Math.max(maxLat, position.latitude);
-                    minLat = Math.min(minLat, position.latitude);
-                    maxLon = Math.max(maxLon, position.longitude);
-                    minLon = Math.min(minLon, position.longitude);
-                }
+                minLon = Math.max(minLon, position.longitude);
+                maxLon = Math.min(maxLon, position.longitude);
+                minLat = Math.max(minLat, position.latitude);
+                maxLat = Math.min(maxLat, position.latitude);
             }
 
             return new Cesium.Extent(minLon, minLat, maxLon, maxLat);
