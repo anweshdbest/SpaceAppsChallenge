@@ -189,6 +189,18 @@ define(function(require) {
                 selectedPhotoPolygon.material.uniforms.image = imageUrl;
 
                 clockViewModel.currentTime(missionDatum.Time);
+
+                document.getElementById('metadata').className = 'visible';
+                document.getElementById('metadataPhotoID').innerText = id;
+                document.getElementById('metadataSchool').innerText = missionDatum.School;
+
+                var gregorianDate = missionDatum.Time.toGregorianDate();
+                document.getElementById('metadataTime').innerText = Cesium.sprintf('%04d/%02d/%02d %02d:%02d:%02d', gregorianDate.year, gregorianDate.month, gregorianDate.day, gregorianDate.hour, gregorianDate.minute, gregorianDate.second);
+
+                document.getElementById('metadataOrbit').innerText = missionDatum.OrbitNumber;
+                document.getElementById('metadataLens').innerText = missionDatum.LensSize;
+                document.getElementById('metadataFrameWidth').innerText = missionDatum.FrameWidth;
+                document.getElementById('metadataFrameHeight').innerText = missionDatum.FrameHeight;
             });
         }
 
