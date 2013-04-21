@@ -154,6 +154,7 @@ define(function(require) {
 
             missionIndexPromise.then(function(missionData) {
                 var imageUrl = missionData[id].ImageUrl;
+                imageUrl = Number(imageUrl) + 3;
                 imageUrl = 'http://images.earthkam.ucsd.edu/main.php?g2_view=core.DownloadItem&g2_itemId=' + imageUrl;
                 imageUrl = proxy.getURL(imageUrl);
                 selectedPhotoPolygon.material.uniforms.image = imageUrl;
