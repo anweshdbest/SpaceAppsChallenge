@@ -110,6 +110,60 @@ define(function(require) {
             }
         });
 
+
+        function selectImage(id, extent) {
+            if (typeof extent === 'undefined') {
+                var polyObjects = photoObjectCollection.getObjects();
+                for ( var i = 0, length = polyObjects.length; i < length; i++) {
+                    var pickedPoly = polyObjects[i];
+                    if (pickedPoly.id === id) {
+                        var positions = pickedPoly.vertexPositions.getValueCartographic(clock.currentTime);
+                        var extent = createExtent(positions);
+                        selectImage(pickedPoly.id, extent);
+                        break;
+                    }
+                }
+            }
+            scene.getCamera().controller.viewExtent(extent, ellipsoid);
+        }
+
+        function createExtent(positions) {
+            var maxLat, maxLon, minLat, minLon;
+            for ( var i = 0; i < positions.length; i++) {
+                var position = positions[i];
+                if (i === 0) {
+                    maxLat = position.latitude;
+                    minLat = position.latitude;
+                    maxLon = position.longitude;
+                    minLon = position.longitude;
+                } else {
+                    maxLat = Math.max(maxLat, position.latitude);
+                    minLat = Math.min(minLat, position.latitude);
+                    maxLon = Math.max(maxLon, position.longitude);
+                    minLon = Math.min(minLon, position.longitude);
+                }
+            }
+
+            return new Cesium.Extent(minLon, minLat, maxLon, maxLat);
+        }
+
+        var handler = new Cesium.ScreenSpaceEventHandler(scene.getCanvas());
+        handler.setInputAction(function(movement) {
+            var pickedObject = scene.pick(movement.position);
+
+            if (typeof pickedObject !== 'undefined') {
+                var index = pickedObject.index;
+                if (typeof index !== 'undefined') {
+                    var polyObjects = photoObjectCollection.getObjects();
+                    for ( var i = 0, length = polyObjects.length; i < length; i++) {
+                        if (polyObjects[i]._polygonVisualizerIndex === index) {
+                            selectImage(polyObjects[i].id);
+                        }
+                    }
+                }
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
         // Pipeline
         // csv to JSON
         // Resize or tile images
