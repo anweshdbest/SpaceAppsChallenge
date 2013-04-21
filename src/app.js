@@ -14,24 +14,25 @@ define(function(require) {
         return outVal;
     }
 
-    return function() {
-        var viewHome = require('./viewHome');
-        var createImageryProviderViewModels = require('./createImageryProviderViewModels');
+    var viewHome = require('./viewHome');
+    var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
+    return function() {
         var widget = new Cesium.CesiumWidget('cesiumContainer');
         widget._isDestroyed = true;
         var centralBody = widget.centralBody;
 
+        var terrainProvider = new Cesium.CesiumTerrainProvider({
+            url : 'http://cesium.agi.com/smallterrain'
+        });
+
+        centralBody.terrainProvider = terrainProvider;
+
         var ellipsoid = centralBody.getEllipsoid();
 
-        centralBody.logoOffset = new Cesium.Cartesian2(300, 26);
+        centralBody.logoOffset = new Cesium.Cartesian2(370, 26);
 
         var clock = widget.clock;
-        clock.currentTime = new Cesium.JulianDate();
-        clock.startTime = clock.currentTime.addDays(-5);
-        clock.stopTime = clock.currentTime.addDays(5);
-        clock.multiplier = 1;
-        clock.clockRange = Cesium.ClockRange.LOOP_STOP;
 
         var clockViewModel = new Cesium.ClockViewModel(clock);
 
@@ -66,24 +67,114 @@ define(function(require) {
         var baseLayerPicker = new Cesium.BaseLayerPicker('baseLayerPickerContainer', imageryLayers, imageryProviderViewModels);
         baseLayerPicker.viewModel.selectedItem(imageryProviderViewModels[0]);
 
-        var primitives = scene.getPrimitives();
-        var camera = scene.getCamera();
+        var photoObjectCollection = new Cesium.DynamicObjectCollection();
+        var photoVisualizers = new Cesium.VisualizerCollection([new Cesium.DynamicPolygonBatchVisualizer(scene)], photoObjectCollection);
 
-        var dynamicObjectCollection = new Cesium.DynamicObjectCollection();
-        var visualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), dynamicObjectCollection);
-        function loadCzml(url) {
-            return Cesium.loadJson(url).then(function(czml) {
-                Cesium.processCzml(czml, dynamicObjectCollection, url);
-                visualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
+        var issObjectCollection = new Cesium.DynamicObjectCollection();
+        var issVisualizers;
+
+        var currentMissionName;
+        function loadCzml(missionName) {
+            if (currentMissionName === missionName) {
+                return;
+            }
+
+            var photoUrl = require.toUrl('../Assets/CZML/' + missionName + '.czml');
+            var issUrl = require.toUrl('../Assets/CZML/' + missionName + '_iss.czml');
+
+            photoObjectCollection.clear();
+            issObjectCollection.clear();
+
+            if (typeof issVisualizers !== 'undefined') {
+                issVisualizers = issVisualizers.destroy();
+            }
+
+            Cesium.when.all([Cesium.loadJson(photoUrl), Cesium.loadJson(issUrl)]).then(function(czmlArray) {
+                var photoCzml = czmlArray[0];
+                var issCzml = czmlArray[1];
+
+                Cesium.processCzml(photoCzml, photoObjectCollection, photoUrl);
+                photoVisualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
+
+                Cesium.processCzml(issCzml, issObjectCollection, issUrl);
+                issVisualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), issObjectCollection);
+
+                var document = issObjectCollection.getObject('document');
+                if (typeof document !== 'undefined' && typeof document.clock !== 'undefined') {
+                    clock.startTime = document.clock.startTime;
+                    clock.stopTime = document.clock.stopTime;
+                    clock.clockRange = document.clock.clockRange;
+                    clock.clockStep = document.clock.clockStep;
+                    clock.multiplier = document.clock.multiplier;
+                    clock.currentTime = document.clock.currentTime;
+
+                    timelineWidget.zoomTo(clock.startTime, clock.stopTime);
+                    clockViewModel.synchronize();
+                }
             });
         }
-        loadCzml('/Assets/all.czml');
 
-        var terrainProvider = new Cesium.CesiumTerrainProvider({
-            url : 'http://cesium.agi.com/smallterrain'
+        loadCzml('ISS13_01_image_data');
+
+        clock.onTick.addEventListener(function(time) {
+            if (typeof issVisualizers !== 'undefined') {
+                issVisualizers.update(clock.currentTime);
+            }
         });
 
-        // centralBody.terrainProvider = terrainProvider;
+
+        function selectImage(id, extent) {
+            if (typeof extent === 'undefined') {
+                var polyObjects = photoObjectCollection.getObjects();
+                for ( var i = 0, length = polyObjects.length; i < length; i++) {
+                    var pickedPoly = polyObjects[i];
+                    if (pickedPoly.id === id) {
+                        var positions = pickedPoly.vertexPositions.getValueCartographic(clock.currentTime);
+                        var extent = createExtent(positions);
+                        selectImage(pickedPoly.id, extent);
+                        break;
+                    }
+                }
+            }
+            scene.getCamera().controller.viewExtent(extent, ellipsoid);
+        }
+
+        function createExtent(positions) {
+            var maxLat, maxLon, minLat, minLon;
+            for ( var i = 0; i < positions.length; i++) {
+                var position = positions[i];
+                if (i === 0) {
+                    maxLat = position.latitude;
+                    minLat = position.latitude;
+                    maxLon = position.longitude;
+                    minLon = position.longitude;
+                } else {
+                    maxLat = Math.max(maxLat, position.latitude);
+                    minLat = Math.min(minLat, position.latitude);
+                    maxLon = Math.max(maxLon, position.longitude);
+                    minLon = Math.min(minLon, position.longitude);
+                }
+            }
+
+            return new Cesium.Extent(minLon, minLat, maxLon, maxLat);
+        }
+
+        var handler = new Cesium.ScreenSpaceEventHandler(scene.getCanvas());
+        handler.setInputAction(function(movement) {
+            var pickedObject = scene.pick(movement.position);
+
+            if (typeof pickedObject !== 'undefined') {
+                var index = pickedObject.index;
+                if (typeof index !== 'undefined') {
+                    var polyObjects = photoObjectCollection.getObjects();
+                    for ( var i = 0, length = polyObjects.length; i < length; i++) {
+                        if (polyObjects[i]._polygonVisualizerIndex === index) {
+                            selectImage(polyObjects[i].id);
+                        }
+                    }
+                }
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
         // Pipeline
         // csv to JSON
@@ -93,30 +184,6 @@ define(function(require) {
         // Compute rotation angle
         // blend layers
         // Sample terrain to draw outline
-
-        var extent = new Cesium.Extent(Cesium.Math.toRadians(-74.56466667), Cesium.Math.toRadians(-36.93666667), Cesium.Math.toRadians(-72.361), Cesium.Math.toRadians(-35.185));
-
-        /*
-         * centralBody.getImageryLayers().addImageryProvider(new
-         * Cesium.SingleTileImageryProvider({ url : 'Assets/12148.jpg', extent :
-         * extent }));
-         */
-
-        var polygon = new Cesium.Polygon();
-        polygon.setPositions(ellipsoid.cartographicArrayToCartesianArray([Cesium.Cartographic.fromDegrees(-72.361, -36.18833333), Cesium.Cartographic.fromDegrees(-73.184, -36.93666667), Cesium.Cartographic.fromDegrees(-74.56466667, -35.92333333), Cesium.Cartographic.fromDegrees(-73.73933333, -35.185)]), 0.0, Cesium.Math.toRadians(30.0));
-        polygon.material = new Cesium.Material.fromType(scene.getContext(), 'Image');
-        polygon.material.uniforms.image = 'Assets/12148.jpg';
-        primitives.add(polygon);
-
-        // camera.controller.viewExtent(extent, ellipsoid);
-
-        /*
-        scene.render();
-        var flight = Cesium.CameraFlightPath.createAnimationCartographic(scene.getFrameState(), {
-            destination : Cesium.Cartographic.fromDegrees(-72.5926666666667, -36.679, 100000.0)
-        });
-        scene.getAnimations().add(flight);
-        */
 
         var firstValidFrame;
 
@@ -136,15 +203,9 @@ define(function(require) {
               }
               var t = firstValidFrame.translation(frame);
 
-              //limit y-axis between 0 and 180 degrees
-              var curY = map(t[1], -300, 300, 0, 179);
-
               //assign rotation coordinates
               var rotateX = t[0];
-              var rotateY = -curY;
-
-              //var zoom = Math.max(0, t[2]);
-              //var zoomFactor = 1/(1 + (zoom / 150));
+              var rotateY = -map(t[1], -300, 300, 0, 179);
 
               var cameraRadius = camera.position.magnitude();
 
@@ -152,7 +213,6 @@ define(function(require) {
               camera.position.x = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180);
               camera.position.y = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.sin(rotateX * Math.PI/180);
               camera.position.z = cameraRadius * Math.cos(rotateY * Math.PI/180);
-              //camera.fov = fov * zoomFactor;
             }
 
             var p = camera.position.negate().normalize();

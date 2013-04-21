@@ -21,12 +21,39 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1366475645655</id>
+			<id>1366510043427</id>
+			<name></name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-requirejs</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1366510043435</id>
+			<name></name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ext-*</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1366492304659</id>
 			<name>server</name>
-			<type>30</type>
+			<type>10</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-node_modules</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1366494668283</id>
+			<name>src</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-domReady.js</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
