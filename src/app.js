@@ -130,13 +130,15 @@ define(function(require) {
         var proxy = new Cesium.DefaultProxy('/proxy/');
         function selectImage(id, extent) {
             var photoPolygon = photoObjectCollection.getObject(id);
+            var positions;
             if (typeof extent === 'undefined') {
-                var positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
+                positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
                 extent = createExtent(positions);
             }
             scene.getCamera().controller.viewExtent(extent, ellipsoid);
 
-            selectedPhotoPolygon.setPositions(photoPolygon.vertexPositions.getValueCartesian(clock.currentTime), 0.0, Cesium.Math.toRadians(30.0));
+            positions = photoPolygon.vertexPositions.getValueCartesian(clock.currentTime);
+            selectedPhotoPolygon.setPositions(positions, 0.0, computeRotation(positions, ellipsoid));
             selectedPhotoPolygon.show = true;
 
             missionIndexPromise.then(function(missionData) {
