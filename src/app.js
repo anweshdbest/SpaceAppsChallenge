@@ -59,6 +59,7 @@ define(function(require) {
         var canvas = widget.canvas;
         var viewHomeButton = document.getElementById('viewHomeButton');
         viewHomeButton.addEventListener('click', function() {
+            cancelViewFromTo();
             viewHome(scene, transitioner, canvas, ellipsoid, camera3D);
         });
 
@@ -69,6 +70,9 @@ define(function(require) {
 
         var photoObjectCollection = new Cesium.DynamicObjectCollection();
         var photoVisualizers = new Cesium.VisualizerCollection([new Cesium.DynamicPolygonBatchVisualizer(scene)], photoObjectCollection);
+
+        var selectedPhotoPolygon = new Cesium.Polygon();
+        selectedPhotoPolygon.material = new Cesium.Material.fromType(scene.getContext(), 'Image');
 
         var issObjectCollection = new Cesium.DynamicObjectCollection();
         var issVisualizers;
@@ -83,6 +87,7 @@ define(function(require) {
             var issUrl = require.toUrl('../Assets/CZML/' + missionName + '_iss.czml');
 
             photoObjectCollection.clear();
+            scene.getPrimitives().remove(selectedPhotoPolygon);
             issObjectCollection.clear();
 
             if (typeof issVisualizers !== 'undefined') {
@@ -95,6 +100,8 @@ define(function(require) {
 
                 Cesium.processCzml(photoCzml, photoObjectCollection, photoUrl);
                 photoVisualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
+
+                scene.getPrimitives().add(selectedPhotoPolygon);
 
                 Cesium.processCzml(issCzml, issObjectCollection, issUrl);
                 issVisualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), issObjectCollection);
@@ -117,24 +124,43 @@ define(function(require) {
         loadCzml('ISS13_01_image_data');
 
         /*
-        clock.onTick.addEventListener(function(time) {
+        clock.onTick.addEventListener(function(clock) {
+            if (typeof viewFromTo !== 'undefined') {
+                viewFromTo.update(clock.currentTime);
+            }
             if (typeof issVisualizers !== 'undefined') {
                 issVisualizers.update(clock.currentTime);
             }
         });
         */
 
+        var proxy = new Cesium.DefaultProxy('/proxy/');
+
+        function cancelViewFromTo() {
+            viewFromTo = undefined;
+            scene.getCamera().transform = Cesium.Matrix4.IDENTITY.clone();
+        }
+
         function selectImage(id, extent) {
+            cancelViewFromTo();
             var photoPolygon = photoObjectCollection.getObject(id);
+            var positions;
             if (typeof extent === 'undefined') {
-                var positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
+                positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
                 extent = createExtent(positions);
             }
             scene.getCamera().controller.viewExtent(extent, ellipsoid);
 
+            positions = photoPolygon.vertexPositions.getValueCartesian(clock.currentTime);
+            selectedPhotoPolygon.setPositions(positions, 0.0, computeRotation(positions, ellipsoid));
+            selectedPhotoPolygon.show = true;
+
             missionIndexPromise.then(function(missionData) {
                 var imageUrl = missionData[id].ImageUrl;
-                console.log(imageUrl);
+                imageUrl = Number(imageUrl) + 3;
+                imageUrl = 'http://images.earthkam.ucsd.edu/main.php?g2_view=core.DownloadItem&g2_itemId=' + imageUrl;
+                imageUrl = proxy.getURL(imageUrl);
+                selectedPhotoPolygon.material.uniforms.image = imageUrl;
             });
         }
 
@@ -154,11 +180,18 @@ define(function(require) {
             return new Cesium.Extent(minLon, minLat, maxLon, maxLat);
         }
 
+        var viewFromTo;
         function pick(coordinates) {
             var pickedObject = scene.pick(coordinates);
-
             if (typeof pickedObject !== 'undefined') {
-                var index = pickedObject.index;
+                var dynamicObject = pickedObject.dynamicObject;
+                if (typeof dynamicObject !== 'undefined') {
+                    if (dynamicObject.id === '/Application/STK/Scenario/SpaceAppsChallenge/Satellite/Iss_25544' && typeof viewFromTo === 'undefined') {
+                        viewFromTo = new Cesium.DynamicObjectView(dynamicObject, scene, widget.ellipsoid);
+                    }
+                }
+
+			var index = pickedObject.index;
                 if (typeof index !== 'undefined') {
                     var polyObjects = photoObjectCollection.getObjects();
                     for ( var i = 0, length = polyObjects.length; i < length; i++) {
