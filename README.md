@@ -5,7 +5,7 @@ Use <a href="http://www.google.com/chrome/" target="_blank">Chrome</a> or <a hre
 
 <a href="http://cesiumspaceapp.cloudapp.net/" target="_blank"><img src="doc/run.png" /></a>
 
-EarthKAM Explorer solves the <a href="http://spaceappschallenge.org/challenge/earth-from-space/" target="_blank">Earth from Space</a> challenge for the [International Space Apps Challenge 2013](http://spaceappschallenge.org/).  EarthKAM Explorer provides web-based 3D exploration of satellite images taken by middle school students through the <a href="https://earthkam.ucsd.edu/" target="_blank">ISS EarthKAM</a> program.
+EarthKAM Explorer solves the <a href="http://spaceappschallenge.org/challenge/earth-from-space/" target="_blank">Earth from Space</a> challenge for the <a href="http://spaceappschallenge.org/" target="_blank">International Space Apps Challenge 2013</a>.  EarthKAM Explorer provides web-based 3D exploration of satellite images taken by middle school students through the <a href="https://earthkam.ucsd.edu/" target="_blank">ISS EarthKAM</a> program.
 
 <p align="center">
 <img src="doc/iss1.jpg" width="640" />
