@@ -126,11 +126,13 @@ define(function(require) {
 
         loadCzml('ISS13_01_image_data');
 
+        /*
         clock.onTick.addEventListener(function(time) {
             if (typeof issVisualizers !== 'undefined') {
                 issVisualizers.update(clock.currentTime);
             }
         });
+        */
 
         function selectImage(id, extent) {
             var photoPolygon = photoObjectCollection.getObject(id);
@@ -204,11 +206,11 @@ define(function(require) {
               if (typeof firstValidFrame === 'undefined') {
                   firstValidFrame = frame;
               }
-              var t = firstValidFrame.translation(frame);
+              var translation = firstValidFrame.translation(frame);
 
               //assign rotation coordinates
-              var rotateX = t[0];
-              var rotateY = -map(t[1], -300, 300, 0, 179);
+              var rotateX = translation[0];
+              var rotateY = -map(translation[1], -300, 300, 1, 179);
 
               var cameraRadius = camera.position.magnitude();
 
