@@ -49764,7 +49764,7 @@ define('DynamicScene/DynamicPolygonBatchVisualizer',['../Core/Cartesian3',
     };
 
     DynamicPolygonBatchVisualizer.prototype._onObjectsRemoved = function(dynamicObjectCollection, dynamicObjects) {
-
+this.removeAllPrimitives();
     };
 
     return DynamicPolygonBatchVisualizer;
@@ -50376,7 +50376,7 @@ define('DynamicScene/CzmlDefaults',[
         './DynamicLabelVisualizer',
         './DynamicPathVisualizer',
         './DynamicPointVisualizer',
-        './DynamicPolygonBatchVisualizer',
+        './DynamicPolygonVisualizer',
         './DynamicPolylineVisualizer',
         './DynamicPyramidVisualizer'
     ], function(

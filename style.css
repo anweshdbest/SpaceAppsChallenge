@@ -23,6 +23,13 @@ body {
 	left: 174px;
 }
 
+#missionSelect {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 999;
+}
+
 #animationContainer {
 	position: absolute;
 	bottom: 0;
