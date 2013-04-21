@@ -140,6 +140,26 @@ namespace csv2Czml
                     output.Append("\",");
                     output.AppendLine();
 
+                    output.Append("\"LensSize\":\"");
+                    output.Append(tokens[14]);
+                    output.Append("\",");
+                    output.AppendLine();
+
+                    output.Append("\"OrbitNumber\":\"");
+                    output.Append(tokens[19]);
+                    output.Append("\",");
+                    output.AppendLine();
+
+                    output.Append("\"FrameWidth\":\"");
+                    output.Append(tokens[15]);
+                    output.Append("\",");
+                    output.AppendLine();
+
+                    output.Append("\"FrameHeight\":\"");
+                    output.Append(tokens[16]);
+                    output.Append("\",");
+                    output.AppendLine();
+
                     output.Append("\"CZML\":\"");
                     output.Append(Path.GetFileNameWithoutExtension(file) + ".czml\"");
                     output.AppendLine();

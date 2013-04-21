@@ -128,6 +128,8 @@ define(function(require) {
                 Cesium.processCzml(photoCzml, photoObjectCollection, photoUrl);
                 photoVisualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
 
+                selectedPhotoPolygon = new Cesium.Polygon();
+                selectedPhotoPolygon.material = new Cesium.Material.fromType(scene.getContext(), 'Image');
                 scene.getPrimitives().add(selectedPhotoPolygon);
 
                 Cesium.processCzml(issCzml, issObjectCollection, issUrl);
@@ -139,7 +141,6 @@ define(function(require) {
                     clock.stopTime = document.clock.stopTime;
                     clock.clockRange = document.clock.clockRange;
                     clock.clockStep = document.clock.clockStep;
-                    clock.multiplier = document.clock.multiplier;
                     clock.currentTime = document.clock.currentTime;
 
                     timelineWidget.zoomTo(clock.startTime, clock.stopTime);
@@ -147,8 +148,6 @@ define(function(require) {
                 }
             });
         }
-
-        loadCzml('ISS13_01_image_data');
 
         clock.onTick.addEventListener(function(clock) {
             if (typeof viewFromTo !== 'undefined') {
@@ -233,19 +232,31 @@ define(function(require) {
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-        // Pipeline
-        // csv to JSON
-        // Resize or tile images
+        var missionSelect = document.getElementById("missionSelect");
+        missionSelect.addEventListener('change', function() {
+            var selected = missionSelect.item(missionSelect.selectedIndex);
+            loadCzml(selected.value);
+        });
 
-        // Graphics
-        // Compute rotation angle
-        // blend layers
-        // Sample terrain to draw outline
-
-        //scene.render();
-        //var flight = Cesium.CameraFlightPath.createAnimationCartographic(scene.getFrameState(), {
-        //    destination : Cesium.Cartographic.fromDegrees(-72.5926666666667, -36.679, 100000.0)
-        //});
-        //scene.getAnimations().add(flight);
+        var missions2CzmlNamePromise = missionDataPromise.then(function(data) {
+            var firstTime = true;
+            var index = {};
+            for ( var i = 0, len = data.length; i < len; ++i) {
+                var datum = data[i];
+                if (typeof index[datum.Mission] === 'undefined') {
+                    var value = datum.CZML.slice(0, datum.CZML.length - 5);
+                    var option = document.createElement("option");
+                    option.text = datum.Mission;
+                    option.value = value;
+                    missionSelect.add(option, null);
+                    index[datum.Mission] = value;
+                    if (firstTime) {
+                        firstTime = false;
+                        loadCzml(value);
+                    }
+                }
+            }
+            return index;
+        });
     };
 });
