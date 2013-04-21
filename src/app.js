@@ -5,6 +5,7 @@ define(function(require) {
 
     var viewHome = require('./viewHome');
     var computeRotation = require('./computeRotation');
+    var createFlyToExtentAnimation = require('./createFlyToExtentAnimation');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
     var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
@@ -173,7 +174,8 @@ define(function(require) {
                 positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
                 extent = createExtent(positions);
             }
-            scene.getCamera().controller.viewExtent(extent, ellipsoid);
+
+            scene.getAnimations().add(createFlyToExtentAnimation(scene.getFrameState(), extent, ellipsoid));
 
             positions = photoPolygon.vertexPositions.getValueCartesian(clock.currentTime);
             selectedPhotoPolygon.setPositions(positions, 0.0, computeRotation(positions, ellipsoid));
