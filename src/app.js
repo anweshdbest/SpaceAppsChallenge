@@ -165,7 +165,37 @@ define(function(require) {
             scene.getCamera().transform = Cesium.Matrix4.IDENTITY.clone();
         }
 
+        var selectedID;
+        var mouseOverID;
+
+        function updateMetadata() {
+            var id = Cesium.defaultValue(mouseOverID, selectedID);
+            if (typeof id === 'undefined') {
+                document.getElementById('metadata').className = '';
+                return;
+            }
+
+            missionIndexPromise.then(function(missionData) {
+                var missionDatum = missionData[id];
+
+                document.getElementById('metadata').className = 'visible';
+                document.getElementById('metadataPhotoID').innerText = id;
+                document.getElementById('metadataSchool').innerText = missionDatum.School;
+
+                var gregorianDate = missionDatum.Time.toGregorianDate();
+                document.getElementById('metadataTime').innerText = Cesium.sprintf('%04d/%02d/%02d %02d:%02d:%02d', gregorianDate.year, gregorianDate.month, gregorianDate.day, gregorianDate.hour, gregorianDate.minute, gregorianDate.second);
+
+                document.getElementById('metadataOrbit').innerText = missionDatum.OrbitNumber;
+                document.getElementById('metadataLens').innerText = missionDatum.LensSize;
+                document.getElementById('metadataFrameWidth').innerText = missionDatum.FrameWidth;
+                document.getElementById('metadataFrameHeight').innerText = missionDatum.FrameHeight;
+            });
+        }
+
         function selectImage(id, extent) {
+            selectedID = id;
+            updateMetadata();
+
             cancelViewFromTo();
             var photoPolygon = photoObjectCollection.getObject(id);
             var positions;
@@ -189,18 +219,6 @@ define(function(require) {
                 selectedPhotoPolygon.material.uniforms.image = imageUrl;
 
                 clockViewModel.currentTime(missionDatum.Time);
-
-                document.getElementById('metadata').className = 'visible';
-                document.getElementById('metadataPhotoID').innerText = id;
-                document.getElementById('metadataSchool').innerText = missionDatum.School;
-
-                var gregorianDate = missionDatum.Time.toGregorianDate();
-                document.getElementById('metadataTime').innerText = Cesium.sprintf('%04d/%02d/%02d %02d:%02d:%02d', gregorianDate.year, gregorianDate.month, gregorianDate.day, gregorianDate.hour, gregorianDate.minute, gregorianDate.second);
-
-                document.getElementById('metadataOrbit').innerText = missionDatum.OrbitNumber;
-                document.getElementById('metadataLens').innerText = missionDatum.LensSize;
-                document.getElementById('metadataFrameWidth').innerText = missionDatum.FrameWidth;
-                document.getElementById('metadataFrameHeight').innerText = missionDatum.FrameHeight;
             });
         }
 
@@ -232,7 +250,7 @@ define(function(require) {
                     }
                 }
 
-			var index = pickedObject.index;
+                var index = pickedObject.index;
                 if (typeof index !== 'undefined') {
                     var polyObjects = photoObjectCollection.getObjects();
                     for ( var i = 0, length = polyObjects.length; i < length; i++) {
@@ -243,6 +261,23 @@ define(function(require) {
                 }
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+        handler.setInputAction(function(movement) {
+            mouseOverID = undefined;
+            var pickedObject = scene.pick(movement.endPosition);
+            if (typeof pickedObject !== 'undefined') {
+                var index = pickedObject.index;
+                if (typeof index !== 'undefined') {
+                    var polyObjects = photoObjectCollection.getObjects();
+                    for ( var i = 0, length = polyObjects.length; i < length; i++) {
+                        if (polyObjects[i]._polygonVisualizerIndex === index) {
+                            mouseOverID = polyObjects[i].id;
+                        }
+                    }
+                }
+            }
+            updateMetadata();
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
         var missionSelect = document.getElementById("missionSelect");
         missionSelect.addEventListener('change', function() {
