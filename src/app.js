@@ -3,17 +3,6 @@ define(function(require) {
     "use strict";
     /*global Cesium,Leap*/
 
-    function map(value, inputMin, inputMax, outputMin, outputMax){
-        var outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
-        if(outVal >  outputMax){
-            outVal = outputMax;
-        }
-        if(outVal <  outputMin){
-            outVal = outputMin;
-        }
-        return outVal;
-    }
-
     var viewHome = require('./viewHome');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
@@ -164,9 +153,8 @@ define(function(require) {
             return new Cesium.Extent(minLon, minLat, maxLon, maxLat);
         }
 
-        var handler = new Cesium.ScreenSpaceEventHandler(scene.getCanvas());
-        handler.setInputAction(function(movement) {
-            var pickedObject = scene.pick(movement.position);
+        function pick(coordinates) {
+            var pickedObject = scene.pick(coordinates);
 
             if (typeof pickedObject !== 'undefined') {
                 var index = pickedObject.index;
@@ -179,6 +167,11 @@ define(function(require) {
                     }
                 }
             }
+        }
+
+        var handler = new Cesium.ScreenSpaceEventHandler(scene.getCanvas());
+        handler.setInputAction(function(movement) {
+            pick(movement.position);
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
         // Pipeline
@@ -191,6 +184,18 @@ define(function(require) {
         // Sample terrain to draw outline
 
         var firstValidFrame;
+        var pickGesture = false;
+
+        function map(value, inputMin, inputMax, outputMin, outputMax){
+            var outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
+            if(outVal >  outputMax){
+                outVal = outputMax;
+            }
+            if(outVal <  outputMin){
+                outVal = outputMin;
+            }
+            return outVal;
+        }
 
         Leap.loop(function(frame) {
             if (widget._needResize) {
@@ -219,12 +224,32 @@ define(function(require) {
               camera.position.x = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180);
               camera.position.y = cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.sin(rotateX * Math.PI/180);
               camera.position.z = cameraRadius * Math.cos(rotateY * Math.PI/180);
+
+              var gestures = frame.gestures;
+              var length = frame.gestures.length;
+              if (length > 0) {
+                  for (var i = 0; i < length; ++i) {
+                      if (gestures[i].type === 'keyTap') {
+                          pickGesture = true;
+                      }
+                  }
+              }
             }
 
             var p = camera.position.negate().normalize();
             var up = Cesium.Cartesian3.cross(p, Cesium.Cartesian3.UNIT_Z).cross(p);
             camera.controller.lookAt(camera.position, Cesium.Cartesian3.ZERO, up);
             widget.scene.render(currentTime);
+
+            if (pickGesture) {
+                pickGesture = false;
+
+                var canvas = scene.getCanvas();
+                var x = canvas.clientWidth * 0.5;
+                var y = canvas.clientHeight * 0.5;
+
+                pick(new Cesium.Cartesian2(x, y));
+            }
           });
     };
 });
