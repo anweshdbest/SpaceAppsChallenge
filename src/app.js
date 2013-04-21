@@ -69,6 +69,9 @@ define(function(require) {
         var photoObjectCollection = new Cesium.DynamicObjectCollection();
         var photoVisualizers = new Cesium.VisualizerCollection([new Cesium.DynamicPolygonBatchVisualizer(scene)], photoObjectCollection);
 
+        var selectedPhotoPolygon = new Cesium.Polygon();
+        selectedPhotoPolygon.material = new Cesium.Material.fromType(scene.getContext(), 'Image');
+
         var issObjectCollection = new Cesium.DynamicObjectCollection();
         var issVisualizers;
 
@@ -82,6 +85,7 @@ define(function(require) {
             var issUrl = require.toUrl('../Assets/CZML/' + missionName + '_iss.czml');
 
             photoObjectCollection.clear();
+            scene.getPrimitives().remove(selectedPhotoPolygon);
             issObjectCollection.clear();
 
             if (typeof issVisualizers !== 'undefined') {
@@ -94,6 +98,8 @@ define(function(require) {
 
                 Cesium.processCzml(photoCzml, photoObjectCollection, photoUrl);
                 photoVisualizers.update(Cesium.Iso8601.MINIMUM_VALUE);
+
+                scene.getPrimitives().add(selectedPhotoPolygon);
 
                 Cesium.processCzml(issCzml, issObjectCollection, issUrl);
                 issVisualizers = new Cesium.VisualizerCollection(Cesium.CzmlDefaults.createVisualizers(scene), issObjectCollection);
@@ -121,6 +127,7 @@ define(function(require) {
             }
         });
 
+        var proxy = new Cesium.DefaultProxy('/proxy/');
         function selectImage(id, extent) {
             var photoPolygon = photoObjectCollection.getObject(id);
             if (typeof extent === 'undefined') {
@@ -129,9 +136,14 @@ define(function(require) {
             }
             scene.getCamera().controller.viewExtent(extent, ellipsoid);
 
+            selectedPhotoPolygon.setPositions(photoPolygon.vertexPositions.getValueCartesian(clock.currentTime), 0.0, Cesium.Math.toRadians(30.0));
+            selectedPhotoPolygon.show = true;
+
             missionIndexPromise.then(function(missionData) {
                 var imageUrl = missionData[id].ImageUrl;
-                console.log(imageUrl);
+                imageUrl = 'http://images.earthkam.ucsd.edu/main.php?g2_view=core.DownloadItem&g2_itemId=' + imageUrl;
+                imageUrl = proxy.getURL(imageUrl);
+                selectedPhotoPolygon.material.uniforms.image = imageUrl;
             });
         }
 
