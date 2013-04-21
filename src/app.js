@@ -208,7 +208,7 @@ define(function(require) {
             widget.scene.initializeFrame();
             var camera = scene.getCamera();
 
-            if (frame.valid) {
+            if (frame.valid && frame.hands.length > 0) {
               if (typeof firstValidFrame === 'undefined') {
                   firstValidFrame = frame;
               }
