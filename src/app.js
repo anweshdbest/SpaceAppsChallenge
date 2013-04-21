@@ -13,6 +13,9 @@ define(function(require) {
         var index = {};
         for ( var i = 0, len = data.length; i < len; ++i) {
             var datum = data[i];
+
+            datum.Time = Cesium.JulianDate.fromIso8601(datum.Time);
+
             index[datum.ID] = datum;
         }
         return index;
@@ -177,11 +180,14 @@ define(function(require) {
             selectedPhotoPolygon.show = true;
 
             missionIndexPromise.then(function(missionData) {
-                var imageUrl = missionData[id].ImageUrl;
+                var missionDatum = missionData[id];
+                var imageUrl = missionDatum.ImageUrl;
                 imageUrl = Number(imageUrl) + 3;
                 imageUrl = 'http://images.earthkam.ucsd.edu/main.php?g2_view=core.DownloadItem&g2_itemId=' + imageUrl;
                 imageUrl = proxy.getURL(imageUrl);
                 selectedPhotoPolygon.material.uniforms.image = imageUrl;
+
+                clockViewModel.currentTime(missionDatum.Time);
             });
         }
 
