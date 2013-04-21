@@ -6,6 +6,16 @@ define(function(require) {
     var viewHome = require('./viewHome');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
 
+    var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
+    var missionIndexPromise = missionDataPromise.then(function(data) {
+        var index = {};
+        for ( var i = 0, len = data.length; i < len; ++i) {
+            var datum = data[i];
+            index[datum.ID] = datum;
+        }
+        return index;
+    });
+
     return function() {
         var widget = new Cesium.CesiumWidget('cesiumContainer');
         var centralBody = widget.centralBody;
@@ -111,12 +121,17 @@ define(function(require) {
         });
 
         function selectImage(id, extent) {
+            var photoPolygon = photoObjectCollection.getObject(id);
             if (typeof extent === 'undefined') {
-                var photoPolygon = photoObjectCollection.getObject(id);
                 var positions = photoPolygon.vertexPositions.getValueCartographic(clock.currentTime);
                 extent = createExtent(positions);
             }
             scene.getCamera().controller.viewExtent(extent, ellipsoid);
+
+            missionIndexPromise.then(function(missionData) {
+                var imageUrl = missionData[id].ImageUrl;
+                console.log(imageUrl);
+            });
         }
 
         function createExtent(positions) {
