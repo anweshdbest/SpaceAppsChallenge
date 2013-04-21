@@ -11,6 +11,8 @@ EarthKAM Explorer solves the <a href="http://spaceappschallenge.org/challenge/ea
 <img src="doc/iss1.jpg" width="640" />
 </p>
 
+Select a mission to see the ISS orbit during that mission and polygons showing where all the images were taken.  Select a polygon to fly to it and see the image, ISS location at time, and related data.
+
 <p align="center">
 <img src="doc/iss2.jpg" width="640" />
 </p>
