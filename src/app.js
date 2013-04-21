@@ -52,6 +52,13 @@ define(function(require) {
         var scene = widget.scene;
         var transitioner = new Cesium.SceneTransitioner(scene);
 
+        // Hack to replace default texture
+        Cesium.when(Cesium.loadImage('../Assets/loading.png'), function(image) {
+            scene.getContext()._defaultTexture = scene.getContext().createTexture2D({
+                source : image
+            });
+        });
+
         var sceneModePickerWidget = new Cesium.SceneModePicker('sceneModePickerContainer', transitioner);
 
         var camera3D = scene.getCamera().clone();
