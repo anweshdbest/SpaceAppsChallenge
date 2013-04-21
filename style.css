@@ -147,6 +147,10 @@ body {
 	display: none;
 }
 
+#metadata a {
+	color: white;
+}
+
 #metadata.visible {
 	display: block;
 }

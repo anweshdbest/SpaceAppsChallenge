@@ -180,6 +180,7 @@ define(function(require) {
 
                 document.getElementById('metadata').className = 'visible';
                 document.getElementById('metadataPhotoID').innerText = id;
+                document.getElementById('metadataPhotoID').href = 'http://images.earthkam.ucsd.edu/main.php?g2_itemId=' + missionDatum.Page;
                 document.getElementById('metadataSchool').innerText = missionDatum.School;
 
                 var gregorianDate = missionDatum.Time.toGregorianDate();
