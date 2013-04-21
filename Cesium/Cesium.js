@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Cesium - https://github.com/AnalyticalGraphicsInc/cesium
  *
  * Copyright 2011-2013 Cesium Contributors
@@ -47912,7 +47912,8 @@ define('DynamicScene/DynamicPathVisualizer',[
 
                 var frameToVisualize = ReferenceFrame.FIXED;
                 if (this._scene.mode === SceneMode.SCENE3D) {
-                    frameToVisualize = positionProperty._getReferenceFrame();
+                    //SPACE APPS HACK
+                    //frameToVisualize = positionProperty._getReferenceFrame();
                 }
 
                 var currentUpdater = this._updaters[frameToVisualize];
