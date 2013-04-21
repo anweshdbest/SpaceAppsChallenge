@@ -40,7 +40,6 @@ define(function(require) {
 
     return function() {
         var widget = new Cesium.CesiumWidget('cesiumContainer');
-        widget._isDestroyed = true;
         var centralBody = widget.centralBody;
 
         var terrainProvider = new Cesium.CesiumTerrainProvider({
@@ -293,14 +292,8 @@ define(function(require) {
             return outVal;
         }
 
-        Leap.loop({enableGestures: true}, function(frame) {
-            if (widget._needResize) {
-                widget.resize();
-                widget._needResize = false;
-            }
-
-            var currentTime = widget.clock.tick();
-            widget.scene.initializeFrame();
+        var controller = new Leap.Controller({enableGestures: true});
+        controller.on('frame', function(frame) {
             var camera = scene.getCamera();
 
             if (frame.valid && frame.hands.length > 0) {
@@ -335,7 +328,6 @@ define(function(require) {
             var p = camera.position.negate().normalize();
             var up = Cesium.Cartesian3.cross(p, Cesium.Cartesian3.UNIT_Z).cross(p);
             camera.controller.lookAt(camera.position, Cesium.Cartesian3.ZERO, up);
-            widget.scene.render(currentTime);
 
             if (pickGesture) {
                 pickGesture = false;
@@ -346,6 +338,7 @@ define(function(require) {
 
                 pick(new Cesium.Cartesian2(x, y));
             }
-          });
+        });
+        controller.connect();
     };
 });
