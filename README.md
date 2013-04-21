@@ -11,7 +11,7 @@ EarthKAM Explorer solves the <a href="http://spaceappschallenge.org/challenge/ea
 <img src="doc/iss1.jpg" width="640" />
 </p>
 
-EarthKAM Explorer is written using JavaScript and <a href="http://cesium.agi.com/" target="_blank">Cesium</a>, an open-source WebGL virtual globe and map, so it runs in a browser with an requiring a plugin.  EarthKAM Explorer support the <a href="https://www.leapmotion.com/" target="_blank">Leap Motion</a> controller for hand-gesture input as shown below.
+EarthKAM Explorer is written in JavaScript using <a href="http://cesium.agi.com/" target="_blank">Cesium</a>, an open-source WebGL virtual globe and map, so it runs in a browser <strong>without a plugin</strong>.  It supports the <a href="https://www.leapmotion.com/" target="_blank">Leap Motion</a> controller for <strong>hand-gesture</strong> input as shown below.
 
 <p align="center">
 <img src="doc/leapmotion.jpg" width="400" />
