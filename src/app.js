@@ -68,7 +68,7 @@ define(function(require) {
             }
 
             var photoUrl = require.toUrl('../Assets/CZML/' + missionName + '.czml');
-            var issUrl = require.toUrl('../Assets/CZML/' + missionName + '_ISS.czml');
+            var issUrl = require.toUrl('../Assets/CZML/' + missionName + '_iss.czml');
 
             photoObjectCollection.clear();
             issObjectCollection.clear();
