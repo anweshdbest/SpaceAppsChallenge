@@ -1,6 +1,5 @@
 @import url(Cesium/Widgets/CesiumWidget/CesiumWidget.css);
 @import url(Cesium/Widgets/widgets.css);
-@import url(ext-4.2.0.663/resources/ext-theme-gray/ext-theme-gray-all.css);
 
 body {
 	padding: 0;
@@ -126,7 +125,5 @@ body {
 }
 
 .cw-agiLogo img {
-	border: none; # grid { position : absolute;
-	top: 0;
-	left: 0;
+	border: none; 
 }
