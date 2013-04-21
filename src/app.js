@@ -198,7 +198,7 @@ define(function(require) {
             return outVal;
         }
 
-        Leap.loop(function(frame) {
+        Leap.loop({enableGestures: true}, function(frame) {
             if (widget._needResize) {
                 widget.resize();
                 widget._needResize = false;
