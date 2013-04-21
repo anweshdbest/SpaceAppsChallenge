@@ -7,6 +7,7 @@ define(function(require) {
     var computeRotation = require('./computeRotation');
     var createFlyToExtentAnimation = require('./createFlyToExtentAnimation');
     var createImageryProviderViewModels = require('./createImageryProviderViewModels');
+    var getQueryParameters = require('./getQueryParameters');
 
     var missionDataPromise = Cesium.loadJson(require.toUrl('../Assets/missions.json'));
 
@@ -149,7 +150,6 @@ define(function(require) {
             });
         }
 
-        /*
         clock.onTick.addEventListener(function(clock) {
             if (typeof viewFromTo !== 'undefined') {
                 viewFromTo.update(clock.currentTime);
@@ -158,7 +158,6 @@ define(function(require) {
                 issVisualizers.update(clock.currentTime);
             }
         });
-        */
 
         var proxy = new Cesium.DefaultProxy('/proxy/');
 
@@ -339,6 +338,9 @@ define(function(require) {
                 pick(new Cesium.Cartesian2(x, y));
             }
         });
-        controller.connect();
+
+        if (getQueryParameters().leap === 'true') {
+            controller.connect();
+        }
     };
 });
