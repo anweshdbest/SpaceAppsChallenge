@@ -23,7 +23,7 @@ EarthKAM Explorer is written in JavaScript using <a href="http://cesium.agi.com/
 <img src="doc/leapmotion.jpg" width="400" />
 </p>
 
-EarthKAM Explorer was created in a weekend by developers from <a href="http://www.agi.com/" target="_blank">Analytical Graphics, Inc</a>: <a href="https://github.com/bagnell" target="_blank">@bagnell</a>, <a href="https://github.com/hpinkos" target="_blank">@hpinkos</a>, <a href="https://twitter.com/matt_amato" target="_blank">@mramato</a>, <a href="https://twitter.com/pjcozzi" target="_blank">@pjcozzi</a>, and <a href="https://github.com/shunter" target="_blank">@shunter</a>.
+EarthKAM Explorer was created in a weekend by developers from <a href="http://www.agi.com/" target="_blank">Analytical Graphics, Inc</a>: <a href="https://github.com/bagnell" target="_blank">@bagnell</a>, <a href="https://github.com/hpinkos" target="_blank">@hpinkos</a>, <a href="https://twitter.com/matt_amato" target="_blank">@mramato</a>, <a href="https://twitter.com/pjcozzi" target="_blank">@pjcozzi</a>,<a href="https://github.com/anweshdbest"> @anwesh </a> and <a href="https://github.com/shunter" target="_blank">@shunter</a> .
 
 <p align="center">
 <img src="doc/team.jpg" width="600" />
